@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+
+    <!-- Конфигурация ActiveMq -->
+
+    <New id="embeddedActiveMqAddress" class="java.lang.String">
+        <Arg>tcp://localhost:61616</Arg>
+    </New>
+
+    <New id="activeMqBroker" class="org.apache.activemq.broker.BrokerService">
+        <Call name="addConnector">
+            <Arg>
+                <Ref id="embeddedActiveMqAddress"/>
+            </Arg>
+        </Call>
+        <Call name="start"/>
+    </New>
+
+    <New id="activeMqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <Arg>
+            <Ref id="embeddedActiveMqAddress"/>
+        </Arg>
+    </New>
+
+    <New id="loggingConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>jms/logger/connectionFactory/loggerCF</Arg>
+        <Arg>
+            <Ref id="activeMqConnectionFactory"/>
+        </Arg>
+    </New>
+
+    <New id="loggingSendQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>jms/logger/queue/logIn</Arg>
+        <Arg>
+            <New class="org.apache.activemq.command.ActiveMQQueue">
+                <Arg>Q.PROTOCOL.TEST</Arg>
+            </New>
+        </Arg>
+    </New>
+
+</Configure>
